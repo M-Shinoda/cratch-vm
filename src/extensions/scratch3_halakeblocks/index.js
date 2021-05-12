@@ -50,7 +50,7 @@ class Scratch3HaLakeBlocks {
                 {
                     opcode: 'fetchURL',
                     blockType: BlockType.COMMAND,
-                    text: 'URL [TEXT]',
+                    text: '[TEXT]　にアクセスする',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
@@ -61,7 +61,7 @@ class Scratch3HaLakeBlocks {
                 {
                     opcode: 'reqURL',
                     blockType: BlockType.REPORTER,
-                    text: 'URL [URL]',
+                    text: '[URL] にアクセスして値を取ってくる',
                     arguments: {
                         URL: {
                             type: ArgumentType.STRING,
@@ -72,11 +72,64 @@ class Scratch3HaLakeBlocks {
                 {
                     opcode: 'reqGistPython',
                     blockType: BlockType.REPORTER,
-                    text: 'URL [URL]',
+                    text: ' [URL]',
                     arguments: {
                         URL: {
                             type: ArgumentType.STRING,
                             defaultValue: "https://gist.github.com/M-Shinoda/73d1b4fb557d5efa76a1405b347809f1/raw/?param=asdfghjk"
+                        }
+                    }
+                },
+                {
+                    opcode: 'paramValue',
+                    blockType: BlockType.REPORTER,
+                    text: '  [onlyURL] /? [parNAME] = [parVAL] & [parPLUS]',
+                    arguments: {
+                        onlyURL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "https://gist.github.com/M-Shinoda/73d1b4fb557d5efa76a1405b347809f1/raw"
+                        },
+                        parNAME: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "param"
+                        },
+                        parVAL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "hogehoge"
+                        },
+                        parPLUS: {
+                            type: ArgumentType.STRING,
+                            defaultValue: " "
+                        }
+                    }
+                },
+                {
+                    opcode: 'paramValuePlus',
+                    blockType: BlockType.REPORTER,
+                    text: '[parNAME] = [parVAL] & [parPLUS]',
+                    arguments: {
+                        parNAME: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "param"
+                        },
+                        parVAL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "hogehoge"
+                        },
+                        parPLUS: {
+                            type: ArgumentType.STRING,
+                            defaultValue: " "
+                        }
+                    }
+                },
+                {
+                    opcode: 'encode',
+                    blockType: BlockType.REPORTER,
+                    text: '[text]をエンコード',
+                    arguments: {
+                        text: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "文字"
                         }
                     }
                 }
@@ -117,12 +170,7 @@ class Scratch3HaLakeBlocks {
         return ajaxPromise;
     }
 
-    /**
-     * Request Python Gist Server
-     * @property {number} URL
-     * @return {number}
-     */
-     reqGistPython (args){
+    reqGistPython (args){
         const ajaxPromise = new Promise(resolve => {
             nets({
                 url: "http://localhost:8000/?URL=" + Cast.toString(args.URL)//localhostを環境に応じて書き換えが必要
@@ -132,6 +180,28 @@ class Scratch3HaLakeBlocks {
             });
         });
         return ajaxPromise;
+    }
+
+    paramValue (args){
+        compURL =  args.onlyURL + "/?" + args.parNAME + "=" + args.parVAL + "&" + args.parPLUS
+        console.log(compURL)
+        const ajaxPromise = new Promise(resolve => {
+            nets({
+                url: "http://localhost:8000/?URL=" + Cast.toString(compURL)//localhostを環境に応じて書き換えが必要
+            }, function(err, res, body){
+                resolve(body);
+               return body;
+            });
+        });
+        return ajaxPromise;
+    }
+
+    paramValuePlus (args){
+        return Cast.toString(args.parNAME + "=" + args.parVAL + "&" + args.parPLUS)
+    }
+
+    encode (args){
+        return encodeURIComponent(args.text)
     }
 }
 
